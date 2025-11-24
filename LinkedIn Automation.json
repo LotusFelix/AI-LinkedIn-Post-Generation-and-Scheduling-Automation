@@ -1,0 +1,1062 @@
+{
+  "name": "LinkedIn Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "79cf5c9c-7bbe-4cf7-a0b7-7d1c30cfeb2f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{$(\"PostSessionId\").item.json.postId}}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        192
+      ],
+      "id": "01bb96df-4dde-4ae1-8b67-63cafe9f5ae1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a captivating LinkedIn post (not an outline) about one of the machine learning or AI engineering niches listed in your system prompt.\n\nThe post must:\n\nStart with a hook that grabs attention within 1–2 sentences --enhanced with a befitting emoji\n\nFlow into an engaging, technically credible body with practical insights.\n\nEnd with a CTA that invites engagement or thought.\n\nStay within 200 words and use no more than 2 emojis for visual appeal.\n\nMaintain a conversational yet professional tone that appeals to ML/AI engineers and recruiters.\n\nIn the post,avoid overusing em dashes (—). Whenever an em dash would normally appear, replace it with a period or a comma depending on context for better readability.\n\n{{ $if(\n$('PostFeedback').isExecuted && $json.useReview, \"Use this feedback to modify your most recent post: \" + $('PostFeedback').first().json.ArticleFeedback, \"\"\n) }}\n",
+        "options": {
+          "systemMessage": "=🧠 System Message\n\nYou are “PostCreator,” an AI assistant that crafts captivating LinkedIn posts that resonate with machine learning and AI engineers.\nSCOPE (choose exactly ONE niche per run):\nData ingestion and cleaning for real world ML pipelines\nFeature engineering and feature selection for structured data\nModel training and hyperparameter optimisation \nEnd to end ML on AWS SageMaker (processing jobs, training jobs, model registry, endpoints)\nDeploying models on SageMaker endpoints and EC2 for real time inference\nCI/CD for ML on AWS (CodePipeline, CodeBuild, ECR, Docker)\nProduction AI agents with LangGraph (tool use, memory, routing, multi-agent workflows)\nLLM-powered applications on AWS (SageMaker, Bedrock, external APIs)\nRetrieval augmented generation (RAG) patterns and evaluation for LLMs\nPractical prompt engineering for production LLM systems\nOUTPUT REQUIREMENTS\nProduce a complete LinkedIn post (not just an outline).\nThe post should have:\nA captivating hook that draws readers in.\nA technically sound and exciting body with clear, practical insights.\nA closing reflection or engagement CTA (for example, a question).\nKeep it within 200 words total.\nThe tone should be professional, insightful, and recruiter friendly, suitable for a technical LinkedIn audience.\nWrite in first person and with personality, as if writing from real experience in ML and LLM development. For example: “I have noticed…”.\nUse a reasonable amount of formatting (break chunks of sentences into paragraphs -- say 3/4 lines max per paragraph -- with spaces between paragraphs to improve readability)and up to two emojis for flow and relatability.\nAvoid fluff; prioritise clarity, value, and real world relevance.\nFinish your post with hashtags that increase visibility on LinkedIn to tech recruiters and machine learning or AI engineers. Each post should have at least 8 AI/ML engineering related hashtags and 2 hastags related to tech (ai/ml) recruiting\nUse UK English spelling. Do not use the em dash character; use commas, full stops, colons or brackets instead."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "3eefea2d-5707-490f-bd3b-6bc7f8e03f27",
+      "name": "PostGenerator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ccf4f0fc-fac3-4df0-82dc-c8d1241f6660",
+              "name": "postId",
+              "value": "={{ Math.floor(Math.random() * 999999999) }}  \n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        0
+      ],
+      "id": "76c8ed30-567a-4701-8a50-a9e17d453739",
+      "name": "PostSessionId"
+    },
+    {
+      "parameters": {
+        "reviewTemplateID": {
+          "__rl": true,
+          "value": "ITgIyUodUx4Y2moxhwlD",
+          "mode": "list",
+          "cachedResultName": "GeneratedPost (ITgIyUodUx4Y2moxhwlD)"
+        },
+        "fields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "GeneratedTopic": "={{ $json.output }}",
+            "Feedback": "Provide Feedback"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "type": "string",
+              "id": "GeneratedTopic",
+              "displayName": "GeneratedTopic (text)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "type": "string",
+              "id": "Feedback",
+              "displayName": "Feedback (text)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "additionalFields": {}
+      },
+      "type": "@gotohuman/n8n-nodes-gotohuman.gotoHuman",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "3cdc08ef-080c-4b3e-b823-bdbf317464da",
+      "name": "PostReview",
+      "webhookId": "985798c3-0bbd-4e67-9a02-49058676c2d5",
+      "credentials": {
+        "gotoHumanApi": {
+          "id": "yTDIzY4CPnDJqPvw",
+          "name": "GoToHumanAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9ea5a1a2-49e1-4c4a-bc39-b9babc2dde9d",
+              "leftValue": "={{ $json.response }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "4ee9a13a-876c-4710-b0c3-aa265a170ee5",
+      "name": "Router"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dfd947fe-e2ac-488e-9ab1-6f5fb65435e1",
+              "name": "ArticleFeedback",
+              "value": "={{ $json.responseValues.Feedback.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        144
+      ],
+      "id": "532f77a6-e33a-4535-b587-b94974e03017",
+      "name": "PostFeedback"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "=Generate a nice professional LinkedIn post illustration.  \nBase the image on this article topic: \"{{$(\"PostReview\").item.json.responseValues.GeneratedTopic.value}}\".  \nThe image should use a colour palette with **deep-teal (#00666F)**, **light-cyan (#A8EDE8)** and **graphite-grey (#3A3A3A)**.   \nStyle: modern flat-vector illustration, minimal shadows, high-contrast, clean lines\nUse exciting graphical illustrations where possible and relevant\nEnsure it is not too text heavy and make sure 100% that is correctly rendered and the text on the image is not cut off imappropriately.\n\nDon't include hashtags in image"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            },
+            {
+              "name": "quality",
+              "value": "high"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        352
+      ],
+      "id": "33668781-bc99-4827-812d-196766e73e12",
+      "name": "ImageGenerator",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hSnMknj9brpUBcug",
+          "name": "OpenAI Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        352
+      ],
+      "id": "5e21a8d6-4fd0-4955-8d28-6dfcb9e46650",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "name": "Data",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1i1DihjdnPBcE8RKvXXp5IepcNLBEM3mV",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Content Calendar",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1i1DihjdnPBcE8RKvXXp5IepcNLBEM3mV"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        784,
+        352
+      ],
+      "id": "7693ea97-50f2-4257-af67-eedeb799e586",
+      "name": "ImageLink",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YawXqlyRq8AK0xSD",
+          "name": "Lotuscontentchef Google Drive Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "reviewTemplateID": {
+          "__rl": true,
+          "value": "iXX2AJ19QMjNCiyXXzCx",
+          "mode": "list",
+          "cachedResultName": "LinkedInImage (iXX2AJ19QMjNCiyXXzCx)"
+        },
+        "fields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ImageLink": "=[\n  {\n    \"url\": \"{{$json.webViewLink}}}\",\n    \"label\": \"Go to link\"\n  }\n]\n",
+            "ImageReview": "Provide Feedback"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "type": "array",
+              "id": "ImageLink",
+              "displayName": "ImageLink (urlLinks)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "type": "string",
+              "id": "ImageReview",
+              "displayName": "ImageReview (text)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "additionalFields": {}
+      },
+      "type": "@gotohuman/n8n-nodes-gotohuman.gotoHuman",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        352
+      ],
+      "id": "5ea68c65-c569-434a-a381-6f5804018958",
+      "name": "ReviewImage",
+      "webhookId": "e3cf1c65-3efb-463a-abd6-348ce17a33e7",
+      "credentials": {
+        "gotoHumanApi": {
+          "id": "yTDIzY4CPnDJqPvw",
+          "name": "GoToHumanAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/edits",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $('Router2').item.json.responseValues.ImageReview.value }}"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            },
+            {
+              "name": "quality",
+              "value": "high"
+            },
+            {
+              "name": "output_format",
+              "value": "png"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1840,
+        464
+      ],
+      "id": "2b101559-33b0-4118-9586-831a8cc00ce8",
+      "name": "EditImage",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hSnMknj9brpUBcug",
+          "name": "OpenAI Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1cb19df-3645-4856-8f62-288474c0750f",
+              "leftValue": "={{ $json.response }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        352
+      ],
+      "id": "54aa1e0c-dc5b-4284-923b-6dcfc40a40a2",
+      "name": "Router2"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('ImageLink').item.json.webViewLink }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1568,
+        464
+      ],
+      "id": "46afbdf3-1d45-4ec7-9a6d-8b87af515bf7",
+      "name": "RetrieveFile",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YawXqlyRq8AK0xSD",
+          "name": "Lotuscontentchef Google Drive Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2032,
+        464
+      ],
+      "id": "7c731da3-8240-446a-9977-5a67af286d1e",
+      "name": "Convert to File2"
+    },
+    {
+      "parameters": {
+        "name": "new_data",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1i1DihjdnPBcE8RKvXXp5IepcNLBEM3mV",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Content Calendar",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1i1DihjdnPBcE8RKvXXp5IepcNLBEM3mV"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2288,
+        464
+      ],
+      "id": "f06d7d09-b2b1-453d-9c4e-6c823dc9a69e",
+      "name": "UpdateFile",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YawXqlyRq8AK0xSD",
+          "name": "Lotuscontentchef Google Drive Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Post Generation Section"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        -32
+      ],
+      "id": "7b330933-55a4-44c1-b6e2-abd02f26e826",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Image Generation Section"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        176
+      ],
+      "id": "d5751f97-1e16-4f16-95de-a19a6dafc9e1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Update Sheet and Repeat"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        800
+      ],
+      "id": "3cd0413f-7db9-4e74-bfb2-5650843fbc53",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sywAEp2VEyvJG5Eyl-oLlN_N0zZNnUF9yzO_N8zCHSU",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Content Calendar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sywAEp2VEyvJG5Eyl-oLlN_N0zZNnUF9yzO_N8zCHSU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "November",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sywAEp2VEyvJG5Eyl-oLlN_N0zZNnUF9yzO_N8zCHSU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Post": "={{ $('Router').item.json.responseValues.GeneratedTopic.value }}",
+            "Image": "={{ $json.responseValues.ImageLink.value[0].url }}",
+            "Schedule Date": "={{ $now.plus({ days: $('Tracker').first().json.day }).toISO() }}",
+            "Status": "Draft"
+          },
+          "matchingColumns": [
+            "Post"
+          ],
+          "schema": [
+            {
+              "id": "Post",
+              "displayName": "Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Image",
+              "displayName": "Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Schedule Date",
+              "displayName": "Schedule Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        16,
+        768
+      ],
+      "id": "9899c04f-701a-419d-9918-2db9012c40bf",
+      "name": "UpdateSheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZDajbidHet7Hhc8I",
+          "name": "Lotuscontentchef Google Sheet API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86792a62-7864-464b-965a-93c4804524f5",
+              "name": "counter",
+              "value": "={{$if($(\"Iteration\").isExecuted, $(\"Iteration\").item.json.new_counter, 0)}}\n",
+              "type": "number"
+            },
+            {
+              "id": "0c14807f-0d7e-46b9-9345-483f353be9a7",
+              "name": "max",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "c90b5460-a728-4ac3-9607-813bcf9c4642",
+              "name": "day",
+              "value": "={{$if($(\"Iteration\").isExecuted, $(\"Iteration\").item.json.new_day, 2)}}\n",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        0
+      ],
+      "id": "38a5ec39-fa8f-465c-b9e4-d19964f3e9e7",
+      "name": "Tracker"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e0c56a7-4587-493a-bb6f-a094ee96a7d0",
+              "name": "new_counter",
+              "value": "={{ $(\"Tracker\").item.json.counter + 1}}",
+              "type": "number"
+            },
+            {
+              "id": "b039dde0-5ebd-4a46-8680-481ae3a873f9",
+              "name": "new_day",
+              "value": "={{ $(\"Tracker\").item.json.day + 1}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        768
+      ],
+      "id": "b9723e14-d298-47ee-ba09-923d5a081be9",
+      "name": "Iteration"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c7557c10-d173-42c7-991a-49cd8b9245d0",
+              "leftValue": "={{ $json.new_counter }}",
+              "rightValue": "={{$(\"Tracker\").item.json.max}}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        768
+      ],
+      "id": "eb3f253a-b4a9-4c71-8f8e-0d576ad61f4f",
+      "name": "Repeat"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "334d262b-f541-49ba-87a1-8240174d8c23",
+              "name": "useReview",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1920,
+        144
+      ],
+      "id": "a577da35-0b5d-4478-a2de-f33a2e0cd86e",
+      "name": "UseReview2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef6ed831-605e-487f-8a59-9d1ddf635e25",
+              "name": "useReview",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "070169dd-bd2c-42fd-adcf-80339303255e",
+      "name": "UseReview"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        816,
+        176
+      ],
+      "id": "8b5e4a94-c418-416d-a442-32a0f1b6ebc4",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ZGYzxxctsSnh1Voi",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "PostSessionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "PostGenerator",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostGenerator": {
+      "main": [
+        [
+          {
+            "node": "PostReview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostSessionId": {
+      "main": [
+        [
+          {
+            "node": "Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostReview": {
+      "main": [
+        [
+          {
+            "node": "Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router": {
+      "main": [
+        [
+          {
+            "node": "ImageGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PostFeedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostFeedback": {
+      "main": [
+        [
+          {
+            "node": "UseReview2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImageGenerator": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "ImageLink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImageLink": {
+      "main": [
+        [
+          {
+            "node": "ReviewImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReviewImage": {
+      "main": [
+        [
+          {
+            "node": "Router2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router2": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RetrieveFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RetrieveFile": {
+      "main": [
+        [
+          {
+            "node": "EditImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditImage": {
+      "main": [
+        [
+          {
+            "node": "Convert to File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File2": {
+      "main": [
+        [
+          {
+            "node": "UpdateFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateFile": {
+      "main": [
+        [
+          {
+            "node": "ReviewImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet": {
+      "main": [
+        [
+          {
+            "node": "Iteration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tracker": {
+      "main": [
+        [
+          {
+            "node": "UseReview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iteration": {
+      "main": [
+        [
+          {
+            "node": "Repeat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Repeat": {
+      "main": [
+        [
+          {
+            "node": "Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UseReview2": {
+      "main": [
+        [
+          {
+            "node": "PostGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UseReview": {
+      "main": [
+        [
+          {
+            "node": "PostGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "PostGenerator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bdb97cb8-0fc8-4020-a836-b3869d80adf9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "59afb276102f508ed278ade2fbdc7e6e717d363d52d19d8b88acde852494af26"
+  },
+  "id": "nLBbS3rUf4BSks14",
+  "tags": []
+}
