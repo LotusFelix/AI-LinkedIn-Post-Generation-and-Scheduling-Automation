@@ -1,100 +1,78 @@
-# AI-LinkedIn-Post-Generation-and-Scheduling-Automation
-This repository contains an end-to-end automation workflow built in n8n.
-It generates LinkedIn posts using LLMs, creates AI images, sends them for review, uploads assets to Google Drive, and schedules approved posts inside Google Sheets.
+# 🤖 AI LinkedIn Post Generation & Scheduling (n8n Workflow)
 
-It is designed for creators, AI engineers, and founders who want to scale high-quality LinkedIn content with human oversight.
+AI-powered automation that **writes, reviews, illustrates, and schedules LinkedIn posts** using n8n, LLMs, AI image generation, and Google Workspace.
 
-🚀 What This Workflow Does
+This workflow turns your LinkedIn content into a **semi-automated production line** with human approval where it matters.
 
-Generates full LinkedIn posts using an AI agent.
+---
 
-Creates custom images with OpenAI’s image API.
+## 🚀 What This Workflow Does
 
-Sends posts and images for human review using GoToHuman.
+- ✍️ **Generates LinkedIn posts** with a focused AI prompt (ML / AI engineering themes)  
+- 🧠 **Uses memory & feedback** to refine posts based on human review  
+- 🖼️ **Creates custom images** via OpenAI image generation and optional image edits  
+- ☁️ **Uploads images to Google Drive** and returns shareable links  
+- 📊 **Updates a Google Sheets content calendar** with post, image link, schedule date, and status  
+- 🔁 **Repeats the process** to generate multiple scheduled posts automatically  
 
-Uploads the final assets to Google Drive.
+---
 
-Writes post + image + scheduled date into Google Sheets.
+## 🧱 High-Level Architecture
 
-Automatically repeats until your post quota is completed.
+- **n8n** – Orchestrates the full workflow  
+- **LLM (via OpenRouter)** – Generates LinkedIn post copy  
+- **OpenAI Images API** – Creates and edits post illustrations  
+- **GoToHuman** – Human-in-the-loop review for posts and images  
+- **Google Drive** – Stores final images and provides URLs  
+- **Google Sheets** – Acts as the content calendar and schedule tracker  
 
-📁 Workflow File
+---
 
-The file linkedin_automation.json in this repository is the complete n8n workflow export.
+## 📂 What’s in This Repo
 
-🛠️ How to Use This Workflow
-1. Import the Workflow
+- `linkedin_automation.json`  
+  Exported n8n workflow that you can **import directly** into your own n8n instance.
 
-Open n8n.
+---
 
-Go to Workflows → Import.
+## 🛠️ How to Use This Workflow
 
-Upload the JSON file or paste its contents.
+### 1️⃣ Import into n8n
 
-Save.
+1. Open your n8n instance  
+2. Go to **Workflows → Import**  
+3. Upload `linkedin_automation.json`  
+4. Save the workflow  
 
-2. Add Your Own Credentials
+---
 
-You must add your own credentials for:
+### 2️⃣ Connect Your Own Credentials
 
-OpenAI API
+In n8n, edit the workflow and attach your own credentials for:
 
-OpenRouter (or chosen LLM provider)
+- 🔑 **OpenAI HTTP Header Auth** – for image generation and edits  
+- 🔑 **OpenRouter API** – for the LLM chat model  
+- 🔑 **Google Drive OAuth2** – for file uploads and links  
+- 🔑 **Google Sheets OAuth2** – for content calendar updates  
+- 🔑 **GoToHuman API** – for review templates and approvals  
 
-Google Drive
+Any node with a ⚠️ icon likely needs a credential attached.
 
-Google Sheets
+---
 
-GoToHuman API
+### 3️⃣ Replace Resource IDs
 
-n8n will show “credentials missing” on nodes until you configure them.
+Update IDs in the nodes to match **your** environment:
 
-3. Replace IDs and File References
+- Google Drive folder IDs  
+- Google Sheets document + sheet IDs  
+- GoToHuman review template IDs  
+- Any hard-coded URLs or webViewLinks  
 
-Before running the workflow, replace the following:
+Look for fields like:
 
-Google Drive folder IDs
-
-Google Sheets document ID
-
-GoToHuman template IDs
-
-Any hard-coded URLs
-
-Search for patterns like:
-
-folderId: "1xxxxxxx"
-documentId: "1yyyyyyy"
-webhookId: "zzzzzzzz"
-
-
-Replace them with your own IDs.
-
-🧠 Workflow Logic Overview
-
-PostSessionId: Creates a unique post ID.
-
-PostGenerator: LLM generates a full LinkedIn post.
-
-PostReview: Human approval or feedback.
-
-ImageGenerator: AI creates an illustration based on the post.
-
-Image Review: Another human approval loop.
-
-Google Drive Upload: Stores images and retrieves share links.
-
-Google Sheets Update: Writes final post info and schedule date.
-
-Repeat Logic: Continues generating multiple posts.
-
-🔐 Security Note
-
-This workflow does not include any API keys.
-However, it contains some resource IDs (Drive folder IDs, Sheet IDs).
-Replace them if you want to avoid exposing internal document identifiers.
-
-📬 Author
-
-Felix Egbine
-Maven Machine Learning Engineer and Automation Specialist
+```json
+"folderId": "1i1DihjdnPBcE8RKvXXp5IepcNLBEM3mV"
+"documentId": "1sywAEp2VEyvJG5Eyl-oLlN..."
+"sheetName": "November"
+"reviewTemplateID": "ITgIyUodUx4Y2moxhwlD"
